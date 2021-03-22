@@ -16,23 +16,28 @@ public class AuctionService {
 
         String msg = null;
 
-        for(BidDTO bidDTO: bids){
+        if(bids.isEmpty()){
+            msg = "Bids is required";
+        } else {
 
-            if(bidDTO.getName() == null || bidDTO.getName().trim().equals("")){
-                msg = "Name is required";
-                break;
-            } else if(bidDTO.getValue() == null || bidDTO.getValue().equals(0.0)){
-                msg = "Value is required";
-                break;
-            } else if(bidDTO.getValue() <= 0){
-                msg = "Value must be positive";
-                break;
-            } else {
-                BigDecimal bigDecimal = new BigDecimal(String.valueOf(bidDTO.getValue()));
+            for (BidDTO bidDTO : bids) {
 
-                if(bigDecimal.scale() > 2) {
-                    msg = "Value cannot have more than two decimal places";
+                if (bidDTO.getName() == null || bidDTO.getName().trim().equals("")) {
+                    msg = "Name is required";
                     break;
+                } else if (bidDTO.getValue() == null || bidDTO.getValue().equals(0.0)) {
+                    msg = "Value is required";
+                    break;
+                } else if (bidDTO.getValue() <= 0) {
+                    msg = "Value must be positive";
+                    break;
+                } else {
+                    BigDecimal bigDecimal = new BigDecimal(String.valueOf(bidDTO.getValue()));
+
+                    if (bigDecimal.scale() > 2) {
+                        msg = "Value cannot have more than two decimal places";
+                        break;
+                    }
                 }
             }
         }
@@ -46,7 +51,7 @@ public class AuctionService {
         BidDTO winnerBid = new BidDTO();
         winnerBid.setName("No winner");
         winnerBid.setValue(Double.MAX_VALUE);
-        double total = bids.size()*0.98;
+        double total = bids.size() > 999 ? 999*0.98 : bids.size()*0.98;
         winnerDTO.setTotal(total);
 
         LinkedHashSet<BidDTO> noDuplicate = new LinkedHashSet<>(bids);
